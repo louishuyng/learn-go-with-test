@@ -1,4 +1,4 @@
-package main
+package arrays_and_slices
 
 func Sum(numbers []int) int {
 	sum := 0
@@ -19,17 +19,23 @@ func SumAll(numbersToSum ...[]int) []int {
 	return sums
 }
 
-func SumAllTails(numbersToSum ...[]int) []int {
-	var sums []int
-
-	for _, numbers := range numbersToSum {
-		if len(numbers) == 0 {
-			sums = append(sums, 0)
+func SumAllTails(numbers ...[]int) []int {
+	sumTail := func(acc, x []int) []int {
+		if len(x) == 0 {
+			return append(acc, 0)
 		} else {
-			tail := numbers[1:]
-			sums = append(sums, Sum(tail))
+			tail := x[1:]
+			return append(acc, Sum(tail))
 		}
 	}
 
-	return sums
+	return Reduce(numbers, sumTail, []int{})
+}
+
+func Reduce[A, B any](collection []A, f func(B, A) B, initialValue B) B {
+	var result = initialValue
+	for _, x := range collection {
+		result = f(result, x)
+	}
+	return result
 }
