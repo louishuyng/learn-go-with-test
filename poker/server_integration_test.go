@@ -1,19 +1,20 @@
-package poker
+package poker_test
 
 import (
 	"net/http"
 	"net/http/httptest"
+	"poker"
 	"testing"
 )
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	database, cleanDatabase := createTempFile(t, `[]`)
 	defer cleanDatabase()
-	store, err := NewFileSystemPlayerStore(database)
+	store, err := poker.NewFileSystemPlayerStore(database)
 
 	assertNoError(t, err)
 
-	server, _ := NewPlayerServer(store)
+	server := mustMakePlayerServer(t, store, dummyGame)
 	player := "Pepper"
 
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
@@ -23,7 +24,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	t.Run("get score", func(t *testing.T) {
 		response := httptest.NewRecorder()
 		server.ServeHTTP(response, newGetScoreRequest(player))
-		assertStatus(t, response.Code, http.StatusOK)
+		assertStatus(t, response, http.StatusOK)
 
 		assertResponseBody(t, response.Body.String(), "3")
 	})
@@ -31,11 +32,11 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	t.Run("get League", func(t *testing.T) {
 		response := httptest.NewRecorder()
 		server.ServeHTTP(response, newLeagueRequest())
-		assertStatus(t, response.Code, http.StatusOK)
+		assertStatus(t, response, http.StatusOK)
 
 		got := getLeagueFromResponse(t, response.Body)
-		want := []Player{
-			{"Pepper", 3},
+		want := []poker.Player{
+			{Name: "Pepper", Wins: 3},
 		}
 		assertLeague(t, got, want)
 	})

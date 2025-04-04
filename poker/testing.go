@@ -47,7 +47,6 @@ func AssertPlayerWin(t testing.TB, store *StubPlayerStore, winner string) {
 type ScheduledAlert struct {
 	At     time.Duration
 	Amount int
-	To     io.Writer
 }
 
 func (s ScheduledAlert) String() string {
@@ -61,5 +60,5 @@ type SpyBlindAlerter struct {
 
 // ScheduleAlertAt records alerts that have been scheduled.
 func (s *SpyBlindAlerter) ScheduleAlertAt(at time.Duration, amount int, to io.Writer) {
-	s.Alerts = append(s.Alerts, ScheduledAlert{at, amount, to})
+	s.Alerts = append(s.Alerts, ScheduledAlert{at, amount})
 }

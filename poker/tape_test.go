@@ -1,15 +1,17 @@
-package poker
+package poker_test
 
 import (
 	"io"
 	"testing"
+
+	"poker"
 )
 
 func TestTape_Write(t *testing.T) {
 	file, clean := createTempFile(t, "12345")
 	defer clean()
 
-	tape := &tape{file: file}
+	tape := &poker.Tape{File: file}
 
 	tape.Write([]byte("abc"))
 
@@ -20,6 +22,6 @@ func TestTape_Write(t *testing.T) {
 	want := "abc"
 
 	if got != want {
-		t.Errorf("got %q, want %q", got, want)
+		t.Errorf("got %q want %q", got, want)
 	}
 }
